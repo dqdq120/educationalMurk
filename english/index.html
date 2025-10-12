@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WordMaster Dictionary & Education</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+            width: 100vw;
+            overflow-x: hidden;
+        }
+        .rectangle-rise {
+            transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
+            position: relative;
+            overflow: hidden;
+            width: 300px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .rectangle-rise:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        .rectangle-animation {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            background: linear-gradient(to bottom, #3b82f6, #1e40af);
+            overflow: hidden;
+        }
+        .rectangle-animation span {
+            position: absolute;
+            width: 4px;
+            height: 20px;
+        }
+        .rect1 { 
+            background: #ff4d4f; 
+            left: 2px; 
+            animation: moveRectangles1 1.5s linear infinite; 
+        }
+        .rect2 { 
+            background: #4ade80; 
+            left: 7px; 
+            animation: moveRectangles2 1.3s linear infinite; 
+        }
+        .rect3 { 
+            background: #facc15; 
+            left: 12px; 
+            animation: moveRectangles1 1.7s linear infinite; 
+        }
+        .rect4 { 
+            background: #60a5fa; 
+            left: 17px; 
+            animation: moveRectangles2 1.4s linear infinite; 
+        }
+        .rect5 { 
+            background: #f472b6; 
+            left: 22px; 
+            animation: moveRectangles1 1.6s linear infinite; 
+        }
+        .rect6 { 
+            background: #34d399; 
+            left: 27px; 
+            animation: moveRectangles2 1.2s linear infinite; 
+        }
+        .rect7 { 
+            background: #a78bfa; 
+            left: 32px; 
+            animation: moveRectangles1 1.8s linear infinite; 
+        }
+        .rect8 { 
+            background: #fb923c; 
+            left: 37px; 
+            animation: moveRectangles2 1.5s linear infinite; 
+        }
+        @keyframes moveRectangles1 {
+            0% { transform: translateY(-20px) scale(1); }
+            50% { transform: translateY(110px) scale(1.2); }
+            100% { transform: translateY(220px) scale(1); }
+        }
+        @keyframes moveRectangles2 {
+            0% { transform: translateY(-20px) scale(1); }
+            50% { transform: translateY(110px) scale(0.8); }
+            100% { transform: translateY(220px) scale(1); }
+        }
+        .swiper-slide {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .auth-form {
+            transition: opacity 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .auth-form.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .fade-in {
+            animation: fadeIn 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        .exam-level {
+            width: 200px;
+            height: 120px;
+        }
+        .grammar-card {
+            width: 300px;
+            height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .mastery-exam {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .mastery-card {
+            width: 848px; /* Matches 4 * 200px + 3 * 16px gap */
+            height: 120px;
+        }
+        .search-result {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-8 text-center shadow-lg">
+        <h1 class="text-4xl font-bold">WordMaster Dictionary & Education System</h1>
+    </header>
+    
+    <nav class="bg-blue-800 p-4 flex justify-between items-center">
+        <button onclick="showForm('signin')" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300">Sign In</button>
+        <button onclick="showForm('signup')" class="bg-white text-blue-600 px-4 py-2 rounded-lg hover:bg-blue-600 hover:text-white transition duration-300">Sign Up</button>
+    </nav>
+    
+    <div id="auth-forms" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
+            <form id="signin-form" class="auth-form hidden">
+                <h2 class="text-2xl font-semibold mb-4">Sign In</h2>
+                <input type="email" placeholder="Email" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <input type="password" placeholder="Password" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300">Sign In</button>
+                <button type="button" onclick="hideForm()" class="w-full mt-2 text-gray-600 hover:text-blue-600">Close</button>
+            </form>
+            <form id="signup-form" class="auth-form hidden">
+                <h2 class="text-2xl font-semibold mb-4">Sign Up</h2>
+                <input type="text" placeholder="Username" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <input type="email" placeholder="Email" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <input type="password" placeholder="Password" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300">Sign Up</button>
+                <button type="button" onclick="hideForm()" class="w-full mt-2 text-gray-600 hover:text-blue-600">Close</button>
+            </form>
+        </div>
+    </div>
+    
+    <section id="search-section" class="py-12 text-center fade-in">
+        <h2 class="text-3xl font-semibold mb-6">Search for Words</h2>
+        <div class="flex justify-center items-center max-w-2xl mx-auto">
+            <input type="text" id="search-input" placeholder="Enter a word..." class="w-full p-4 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
+            <button id="search-button" onclick="searchWord()" class="bg-blue-600 text-white p-4 rounded-r-lg hover:bg-blue-700 transition duration-300">Search</button>
+        </div>
+        <div id="result" class="search-result hidden"></div>
+    </section>
+    
+    <section id="education-section" class="py-12 text-center fade-in">
+        <h2 class="text-3xl font-semibold mb-6">Educational Tiers</h2>
+        <div class="swiper education-swiper" style="max-width: 1200px; margin: auto;">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 1</h3>
+                        <p>5000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 2</h3>
+                        <p>10000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                            <span class="rect3"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 3</h3>
+                        <p>15000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                            <span class="rect3"></span>
+                            <span class="rect4"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 4</h3>
+                        <p>20000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                            <span class="rect3"></span>
+                            <span class="rect4"></span>
+                            <span class="rect5"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 5</h3>
+                        <p>25000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                            <span class="rect3"></span>
+                            <span class="rect4"></span>
+                            <span class="rect5"></span>
+                            <span class="rect6"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 6</h3>
+                        <p>30000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                            <span class="rect3"></span>
+                            <span class="rect4"></span>
+                            <span class="rect5"></span>
+                            <span class="rect6"></span>
+                            <span class="rect7"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 7</h3>
+                        <p>35000 Words</p>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
+                        <div class="rectangle-animation">
+                            <span class="rect1"></span>
+                            <span class="rect2"></span>
+                            <span class="rect3"></span>
+                            <span class="rect4"></span>
+                            <span class="rect5"></span>
+                            <span class="rect6"></span>
+                            <span class="rect7"></span>
+                            <span class="rect8"></span>
+                        </div>
+                        <h3 class="text-xl font-semibold">Tier 8</h3>
+                        <p>40000 Words</p>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+      </section>
+      <section id="exams-section" class="py-12 text-center fade-in">
+          <h2 class="text-3xl font-semibold mb-6">8 Levels of Examinations</h2>
+          <div class="flex justify-center flex-wrap gap-4">
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 1</p>
+              </div>
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 2</p>
+              </div>
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                      <span class="rect3"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 3</p>
+              </div>
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                      <span class="rect3"></span>
+                      <span class="rect4"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 4</p>
+              </div>
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                      <span class="rect3"></span>
+                      <span class="rect4"></span>
+                      <span class="rect5"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 5</p>
+              </div>
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                      <span class="rect3"></span>
+                      <span class="rect4"></span>
+                      <span class="rect5"></span>
+                      <span class="rect6"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 6</p>
+              </div>
+              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                      <span class="rect3"></span>
+                      <span class="rect4"></span>
+                      <span class="rect5"></span>
+                      <span class="rect6"></span>
+                      <span class="rect7"></span>
+                  </div>
+                  <p class="text-lg font-semibold">Level 7</p>
+              </div>
+          </div>
+          <div class="flex justify-center mt-6">
+              <div class="rectangle-rise mastery-card bg-white rounded-lg shadow-lg cursor-pointer">
+                  <div class="rectangle-animation">
+                      <span class="rect1"></span>
+                      <span class="rect2"></span>
+                      <span class="rect3"></span>
+                      <span class="rect4"></span>
+                      <span class="rect5"></span>
+                      <span class="rect6"></span>
+                      <span class="rect7"></span>
+                      <span class="rect8"></span>
+                  </div>
+                  <div class="mastery-exam">
+                      <p class="text-lg font-semibold">Mastery Exam</p>
+                      <i class="fas fa-crown text-yellow-500"></i>
+                  </div>
+              </div>
+          </div>
+      </section>
+    
+    <section id="daily-exam" class="py-12 text-center fade-in">
+        <h2 class="text-3xl font-semibold mb-6">Daily Examining Pages</h2>
+        <p class="text-lg mb-4">Take your daily quiz to reinforce learning!</p>
+        <button onclick="alert('Starting daily exam... (Placeholder)')" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">Start Daily Exam</button>
+    </section>
+    
+    
+    <section id="grammar-slide" class="py-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center">
+        <h2 class="text-3xl font-semibold mb-6">Grammatical Courses</h2>
+        <div class="swiper grammar-swiper" style="max-width: 1200px; margin: auto;">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide">
+                    <div class="grammar-card bg-white bg-opacity-20 rounded-lg text-center">
+                        <h3 class="text-xl font-semibold">Basic Grammar</h3>
+                        <p>Learn nouns, verbs, and basic sentence structure.</p>
+                        <button onclick="alert('Starting Basic Grammar Course')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start</button>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="grammar-card bg-white bg-opacity-20 rounded-lg text-center">
+                        <h3 class="text-xl font-semibold">Intermediate Grammar</h3>
+                        <p>Explore tenses, clauses, and punctuation.</p>
+                        <button onclick="alert('Starting Intermediate Grammar Course')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start</button>
+                    </div>
+                </div>
+                <div class="swiper-slide">
+                    <div class="grammar-card bg-white bg-opacity-20 rounded-lg text-center">
+                        <h3 class="text-xl font-semibold">Advanced Grammar</h3>
+                        <p>Master complex structures and stylistic elements.</p>
+                        <button onclick="alert('Starting Advanced Grammar Course')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start</button>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </section>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
+    <script>
+        // Initialize Swiper for Educational Tiers
+        const educationSwiper = new Swiper('.education-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+                1024: { slidesPerView: 4 },
+            },
+        });
+
+        // Initialize Swiper for Grammar Courses
+        const grammarSwiper = new Swiper('.grammar-swiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            breakpoints: {
+                640: { slidesPerView: 2 },
+                768: { slidesPerView: 3 },
+            },
+        });
+
+        function showForm(type) {
+            const authForms = document.getElementById('auth-forms');
+            const signInForm = document.getElementById('signin-form');
+            const signUpForm = document.getElementById('signup-form');
+            authForms.classList.remove('hidden');
+            if (type === 'signin') {
+                signInForm.classList.remove('hidden');
+                signInForm.classList.add('show');
+                signUpForm.classList.add('hidden');
+            } else {
+                signUpForm.classList.remove('hidden');
+                signUpForm.classList.add('show');
+                signInForm.classList.add('hidden');
+            }
+        }
+
+        function hideForm() {
+            const authForms = document.getElementById('auth-forms');
+            const signInForm = document.getElementById('signin-form');
+            const signUpForm = document.getElementById('signup-form');
+            authForms.classList.add('hidden');
+            signInForm.classList.remove('show');
+            signUpForm.classList.remove('show');
+        }
+
+        function searchWord() {
+            const word = document.getElementById('search-input').value.trim();
+            localStorage.setItem("selectedWord", word);
+            window.location.assign("wordPreview.html");
+        }
+
+        document.getElementById('signin-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Signed in successfully! (Placeholder)');
+            hideForm();
+        });
+
+        document.getElementById('signup-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Signed up successfully! (Placeholder)');
+            hideForm();
+        });
+
+        // Add click events for exam levels
+        document.querySelectorAll('#exams-section .rectangle-rise').forEach((el, index) => {
+            el.addEventListener('click', () => {
+                alert(`Level ${index + 1} Exam${index === 7 ? ' (Mastery Exam)' : ''}`);
+            });
+        });
+
+        // Add click events for educational tiers
+        document.querySelectorAll('#education-section .rectangle-rise').forEach((el, index) => {
+            el.addEventListener('click', () => {
+                const words = (index + 1) * 5000;
+                alert(`Tier ${index + 1}: Learn ${words} words`);
+            });
+        });
+
+        // Add enter key support for search
+        document.getElementById('search-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                searchWord();
+            }
+        });
+    </script>
+</body>
+</html>

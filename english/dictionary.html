@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>English Word Dictionary</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      background: linear-gradient(135deg, #c4c4c4, #ffffff);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      color: #333;
+    }
+    .container {
+      margin-top: 50px;
+      background: #fff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+      width: 600px;
+      max-width: 90%;
+      animation: fadeIn 0.6s ease;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #5563DE;
+    }
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 25px;
+    }
+    .search-box input {
+      flex: 1;
+      padding: 12px;
+      border-radius: 8px;
+      border: 2px solid #ccc;
+      font-size: 16px;
+      transition: border 0.3s;
+    }
+    .search-box input:focus {
+      outline: none;
+      border: 2px solid #5563DE;
+    }
+    .search-box button {
+      padding: 12px 20px;
+      border: none;
+      background: #5563DE;
+      color: white;
+      font-size: 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .search-box button:hover {
+      background: #3f4bb8;
+    }
+    .card {
+      background: #f9f9ff;
+      padding: 20px;
+      border-radius: 12px;
+      margin-bottom: 20px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      animation: slideUp 0.4s ease;
+    }
+    .card h2 {
+      margin-top: 0;
+      color: #333;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin: 6px 0;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>📖 English Dictionary</h1>
+    <div class="search-box">
+      <input type="text" id="wordInput" placeholder="Enter a word (e.g., teach)">
+      <button onclick="loadWord()">Search</button>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <script>
+    async function loadWord() {
+      const word = document.getElementById("wordInput").value.trim().toLowerCase();
+      const resultDiv = document.getElementById("result");
+      if (!word) {
+        resultDiv.innerHTML = "<p>Please enter a word.</p>";
+        return;
+      }
+
+      localStorage.setItem("selectedWord", word);
+      window.location.assign("wordPreview.html");
+    }
+  </script>
+</body>
+</html>

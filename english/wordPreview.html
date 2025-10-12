@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Details</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(to bottom right, #eef3ff, #d8e1ff);
+      color: #222;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      color: #2a4b9b;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      color: #333;
+      margin-top: 25px;
+    }
+
+    .meaning {
+      margin-bottom: 15px;
+    }
+
+    .example {
+      font-style: italic;
+      color: #555;
+    }
+
+    button {
+      background: #2a4b9b;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-bottom: 20px;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1e3580;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    li {
+      margin: 5px 0;
+    }
+
+    .card {
+      background: #f9f9ff;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
+
+    .affix-btn {
+      background: #e0e4ff;
+      color: #2a4b9b;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      margin: 5px 5px 0 0;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .affix-btn:hover {
+      background: #c9d0ff;
+      transform: scale(1.05);
+    }
+
+    .ai-buttons {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .ai-buttons .affix-btn {
+      background: #d0dcff;
+    }
+
+    .ai-buttons .affix-btn:hover {
+      background: #b8c8ff;
+    }
+    .copilot-btn {
+      background: #d0f0ff;
+      color: #2a4b9b;
+      width: 50%;
+    }
+    .copilot-btn:hover {
+      background: #2a4b9b;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <button onclick="goBack()">← Back</button>
+    <h1 id="wordTitle">Loading...</h1>
+
+    
+
+    <div id="wordDetails">Fetching details... </div>
+  </div>
+
+  <script>
+    function goBack() {
+      window.history.back();
+    }
+
+    const word = localStorage.getItem("selectedWord");
+    const title = document.getElementById("wordTitle");
+    const details = document.getElementById("wordDetails");
+
+    if (!word) {
+      title.textContent = "No word selected";
+      details.textContent = "Please go back and choose a word.";
+    } else {
+      title.textContent = word;
+      loadWordDetails(word);
+    }
+
+    async function loadWordDetails(word) {
+      details.innerHTML = "<p>Loading word details...</p>";
+
+      try {
+        // Try to fetch local word data (prefixes, suffixes, examples)
+        let localData = null;
+        try {
+          const localResponse = await fetch(`../merged_words/${word[0]}.json`);
+          if (localResponse.ok) {
+            localData = await localResponse.json();
+          }
+        } catch (e) {
+          console.warn("No local file found for:", word);
+        }
+        localData.forEach(entry => {
+          if (entry.word.toLowerCase() === word.toLowerCase()) {
+            localData = entry;
+          }
+        });
+        // Fetch dictionary API info
+        const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${word}`);
+        const data = await response.json();
+        const copilotBtnHTML = `<div class="ai-buttons">
+                                <button class="card copilot-btn" style="background-image: url('icons8-microsoft-copilot-96.png');background-repeat: no-repeat;background-position: calc(100% - 2px);background-size: contain;" onclick="askCopilot()">Ask Copilot &nbsp;&nbsp;&nbsp;&nbsp;</button>
+                              </div>`
+        if (data.title === "No Definitions Found") {
+          details.innerHTML =copilotBtnHTML ;
+          return;
+        }
+
+        const entry = data[0];
+        details.innerHTML = "";
+
+        if (entry.phonetic) {
+          details.innerHTML += `<p><strong>Pronunciation:</strong> ${entry.phonetic}</p>`;
+        }
+
+        // Add main meanings
+        entry.meanings.forEach(m => {
+          details.innerHTML += `
+            <div class="card">
+              <h2>${m.partOfSpeech}</h2>
+              <p><strong>Definition:</strong> ${m.definitions[0].definition}</p>
+              ${m.definitions[0].example ? `<p class="example">Example: ${m.definitions[0].example}</p>` : ""}
+            </div>
+          `;
+        });
+
+        // Add prefixes and suffixes from local data
+        if (localData) {
+          if (localData.prefixes && localData.prefixes.length > 0) {
+            details.innerHTML += `
+              <div class="card">
+                <h2>Prefixes</h2>
+                ${localData.prefixes.map(p => `<button class="affix-btn" onclick="openPrefix('${p.replace(/[-]/g, "")}')">${p}</button>`).join("")}
+              </div>
+            `;
+          }
+
+          if (localData.suffixes && localData.suffixes.length > 0) {
+            details.innerHTML += `
+              <div class="card">
+                <h2>Suffixes</h2>
+                ${localData.suffixes.map(s => `<button class="affix-btn" onclick="openSufffix('${s.replace(/[-]/g, "")}')">${s}</button>`).join("")}
+              </div>
+            `;
+          }
+
+          if (localData.examples && localData.examples.length > 0) {
+            details.innerHTML += `
+              <div class="card">
+                <h2>Extra Examples</h2>
+                <ul>${localData.examples.map(e => `<li>${e}</li>`).join("")}</ul>
+              </div>
+            `;
+          }
+          
+        }
+        details.innerHTML +=copilotBtnHTML ;
+        
+      } catch (error) {
+        console.error(error);
+        details.innerHTML = `
+    <div class="ai-buttons">
+      <button class="affix-btn" style="background-image: url('icons8-microsoft-copilot-96.png');background-repeat: no-repeat;background-position: calc(100% - 2px);background-size: contain;" onclick="askCopilot()">Ask Copilot &nbsp;&nbsp;&nbsp;&nbsp;</button>
+    </div>`;
+      }
+    }
+
+    // 🔹 When user clicks a prefix or suffix button
+    function openPrefix(prefix) {
+      localStorage.setItem("selectedWord", prefix + word);
+      window.location.assign("wordPreview.html");
+    }
+
+    function openSufffix(suffix) {
+      localStorage.setItem("selectedWord", word + suffix);
+      window.location.assign("wordPreview.html");
+    }
+
+    // 🔹 Ask ChatGPT or Copilot about the word
+    function askChatGPT() {
+      const prompt = encodeURIComponent(`Explain the meaning or usage of the word "${word}" in simple terms.`);
+      window.open(`https://chat.openai.com/?q=${prompt}`, "_blank");
+    }
+
+    function askCopilot() {
+      const prompt = encodeURIComponent(`Explain the meaning or usage of the word "${word}" in simple terms.`);
+      window.open(`https://copilot.microsoft.com/?q=${prompt}`, "_blank");
+    }
+  </script>
+
+</body>
+</html>
