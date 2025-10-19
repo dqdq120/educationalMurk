@@ -87,21 +87,22 @@
   <!-- Loading Screen -->
   <div id="loading">
     <div class="spinner"></div>
-    <div>Loading top 5000 words...</div>
+    <div>Loading top words...</div>
   </div>
 
   <!-- Main Content -->
   <main id="content">
-    <h1>Top 5000 English Words</h1>
+    <h1>Top English Words</h1>
     <div class="word-grid" id="wordList"></div>
   </main>
 
   <script>
     // 🧹 Remove the saved word when the page loads
     localStorage.removeItem("selectedWord");
+    level = localStorage.getItem("level") || "top5000_words.json";
  
     // Fetch and display words
-    fetch("../top5000_words.json")
+    fetch("../" + level)
       .then(res => res.json())
       .then(words => {
         const list = document.getElementById("wordList");

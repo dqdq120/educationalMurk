@@ -512,7 +512,9 @@
         document.querySelectorAll('#education-section .rectangle-rise').forEach((el, index) => {
             el.addEventListener('click', () => {
                 const words = (index + 1) * 5000;
-                alert(`Tier ${index + 1}: Learn ${words} words`);
+                localStorage.setItem("level", `top${words}_words.json`);
+                window.location.assign("excersise.html");
+                
             });
         });
 
