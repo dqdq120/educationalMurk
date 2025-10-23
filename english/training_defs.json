@@ -1,0 +1,44 @@
+[
+    {
+        "word": "the",
+        "partOfSpeech": "article",
+        "definition": "Used with an adjective",
+        "example": null,
+        "timestamp": "2025-10-23T22:19:52.600Z"
+    },
+    {
+        "word": "the",
+        "partOfSpeech": "adverb",
+        "definition": "With a comparative or with more and a verb phrase, establishes a correlation with one or more other such comparatives.",
+        "example": "The hotter(,) the better. (comma usually omitted in such very short expressions)",
+        "timestamp": "2025-10-23T22:19:55.286Z"
+    },
+    {
+        "word": "the",
+        "partOfSpeech": "adverb",
+        "definition": "With a comparative, and often with for it, indicates a result more like said comparative. This can be negated with none.",
+        "example": "It was a difficult time, but I’m the wiser for it.",
+        "timestamp": "2025-10-23T22:19:57.517Z"
+    },
+    {
+        "word": "the",
+        "partOfSpeech": "pronoun",
+        "definition": "Obsolete form of thee.",
+        "example": null,
+        "timestamp": "2025-10-23T22:20:19.039Z"
+    },
+    {
+        "word": "the",
+        "partOfSpeech": "preposition",
+        "definition": "For each; per.",
+        "example": "valued at half a pound the bushel; paying seven dollars the year interest",
+        "timestamp": "2025-10-23T22:20:20.174Z"
+    },
+    {
+        "word": "the",
+        "partOfSpeech": "adverb",
+        "definition": "(with a superlative adjective) Beyond all others.",
+        "example": "We went the furthest under her leadership.",
+        "timestamp": "2025-10-23T22:20:21.677Z"
+    }
+]

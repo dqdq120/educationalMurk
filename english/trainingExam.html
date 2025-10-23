@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Training Exam</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/confetti.min.js"></script>
+  <style>
+    /* (same beautiful CSS you already had – unchanged) */
+    body{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+    .exam-container{background:#fff;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.15);overflow:hidden;margin-top:2rem;max-width:700px}
+    .header{background:#2a4b9b;color:#fff;padding:1.5rem;text-align:center}
+    .progress{height:8px;background:#e0e0e0}
+    .progress-bar{background:#28a745;transition:width .4s ease}
+    .question-card{padding:2rem;min-height:400px;display:flex;flex-direction:column;justify-content:space-between}
+    .options{display:grid;gap:.75rem;margin:1.5rem 0}
+    .option-btn{text-align:left;padding:1rem;border:2px solid #ddd;border-radius:12px;background:#f8f9fa;transition:all .2s;cursor:pointer}
+    .option-btn:hover{border-color:#2a4b9b;background:#eef3ff}
+    .option-btn.correct{background:#d4edda;border-color:#28a745;color:#155724}
+    .option-btn.incorrect{background:#f8d7da;border-color:#dc3545;color:#721c24}
+    .flashcard{perspective:1000px;height:280px;cursor:pointer}
+    .flashcard-inner{position:relative;width:100%;height:100%;text-align:center;transition:transform .8s;transform-style:preserve-3d}
+    .flashcard.flipped .flashcard-inner{transform:rotateY(180deg)}
+    .flashcard-front,.flashcard-back{position:absolute;width:100%;height:100%;backface-visibility:hidden;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:2rem;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.1)}
+    .flashcard-front{background:#f9f9ff}
+    .flashcard-back{background:#e6f4ea;transform:rotateY(180deg)}
+    .word-display{font-size:2.2rem;font-weight:bold;color:#2a4b9b}
+    .input-answer{font-size:1.1rem;padding:.75rem}
+    .timer{font-size:.9rem;color:#666}
+    .results-table th{background:#f1f3f5}
+    .confetti-canvas{position:fixed;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:9999}
+    .no-data{color:#888;font-style:italic;padding:3rem;text-align:center}
+    .badge-type{font-size:.8rem;padding:.35rem .7rem}
+  </style>
+</head>
+<body>
+  <div class="container py-4">
+    <div class="exam-container mx-auto">
+      <div class="header">
+        <button class="btn btn-sm btn-light float-start" onclick="goBack()">
+          <i class="bi bi-arrow-left"></i>
+        </button>
+        <h4 class="mb-0">Training Exam</h4>
+      </div>
+      <div class="progress"><div class="progress-bar" id="progressBar" style="width:0%"></div></div>
+      <div id="examContent" class="question-card">
+        <div class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-3">Loading questions…</p>
+        </div>
+      </div>
+      <div id="results" class="p-4" style="display:none;"></div>
+    </div>
+  </div>
+
+  <script>
+    /* ---------- GLOBAL STATE ---------- */
+    let trainingData = [], top5000 = [];
+    let questions = [], currentIndex = 0, score = 0, startTime = Date.now();
+    let questionStartTime;
+    const scoreByType = { MCQ:0, RCQ:0, TF:0, Matching:0, Flashcard:0 };
+    const totalByType = { MCQ:0, RCQ:0, TF:0, Matching:0, Flashcard:0 };
+
+    const content = document.getElementById('examContent');
+    const results = document.getElementById('results');
+    const progressBar = document.getElementById('progressBar');
+
+    /* ---------- LOAD DATA ---------- */
+    async function loadAllData() {
+      try {
+        // 1. Load training definitions
+        const tr = await fetch('training_defs.json');
+        if (!tr.ok) throw new Error('training_defs.json not found');
+        trainingData = await tr.json();
+
+        // 2. Load top-5000 words (optional but makes MCQ/TF richer)
+        try {
+          const tp = await fetch('../top5000_words.json');
+          if (tp.ok) top5000 = await tp.json();
+        } catch (_) { console.warn('top5000_words.json not available – falling back to training data for distractors'); }
+
+        if (!trainingData || trainingData.length===0) {
+          content.innerHTML = '<div class="no-data">No training items yet! Add some from the unknown preview.</div>';
+          return;
+        }
+
+        questions = generateQuestions(trainingData);
+        questions = shuffle(questions);
+        currentIndex = 0; score = 0;
+        Object.keys(scoreByType).forEach(k=>{scoreByType[k]=0; totalByType[k]=0;});
+        questions.forEach(q=>totalByType[q.type]++);
+        showCurrentQuestion();
+      } catch (e) {
+        content.innerHTML = `<div class="alert alert-danger">Error: ${e.message}</div>`;
+      }
+    }
+
+    /* ---------- QUESTION GENERATION ---------- */
+    function generateQuestions(data) {
+      const qs = [];
+      data.forEach(entry => {
+        const possible = ['MCQ','RCQ','TF','Flashcard'];
+        if (data.length>=4) possible.push('Matching');
+
+        const type = possible[Math.floor(Math.random()*possible.length)];
+
+        switch(type){
+          case 'MCQ': qs.push(createMCQ(entry,data)); break;
+          case 'RCQ': qs.push(createRCQ(entry)); break;
+          case 'TF' : qs.push(createTrueFalse(entry)); break;
+          case 'Matching':
+            if (!qs.some(q=>q.type==='Matching')) qs.push(createMatching(data));
+            break;
+          case 'Flashcard': qs.push(createFlashcard(entry)); break;
+        }
+      });
+      return qs.filter(Boolean);
+    }
+
+    /*** MCQ – uses top5000 for distractors ***/
+    function createMCQ(entry, allData){
+      const pool = top5000.length ? top5000 : allData.map(d=>d.word);
+      const distractors = pool
+        .filter(w=>w.toLowerCase()!==entry.word.toLowerCase())
+        .sort(()=>Math.random()-.5)
+        .slice(0,3);
+
+      const options = shuffle([entry.word, ...distractors]);
+      return {
+        type:'MCQ',
+        question:`What word matches this definition?<br><em>"${entry.definition}"</em>`,
+        options,
+        correct:entry.word,
+        entry
+      };
+    }
+
+    function createRCQ(entry){
+      return {
+        type:'RCQ',
+        question:`Type the word for:<br><strong>${entry.definition}</strong>`,
+        correct:entry.word.toLowerCase(),
+        entry
+      };
+    }
+
+    /*** True/False – fake word from top5000 ***/
+    function createTrueFalse(entry){
+      const isTrue = Math.random()>.5;
+      const fake = top5000.length
+        ? top5000.filter(w=>w.toLowerCase()!==entry.word.toLowerCase())[Math.floor(Math.random()*top5000.length)]
+        : ['synergy','quantum','paradigm','leverage','disrupt','iterate'][Math.floor(Math.random()*6)];
+      return {
+        type:'TF',
+        question:isTrue
+          ? `Is "<strong>${entry.word}</strong>" defined as:<br><em>"${entry.definition}"</em>?`
+          : `Is "<strong>${fake}</strong>" defined as:<br><em>"${entry.definition}"</em>?`,
+        correct:isTrue,
+        entry
+      };
+    }
+
+    function createMatching(allData){
+      const selected = shuffle(allData).slice(0,4);
+      const words = shuffle(selected.map(s=>s.word));
+      return {
+        type:'Matching',
+        question:'Match the words to their definitions:',
+        pairs:selected.map(s=>({word:s.word,def:s.definition})),
+        words,
+        correct:Object.fromEntries(selected.map(s=>[s.word,s.definition]))
+      };
+    }
+
+    function createFlashcard(entry){
+      return {
+        type:'Flashcard',
+        front:`
+          <div><strong>Part of Speech:</strong> ${entry.partOfSpeech}</div>
+          <div class="mt-2"><strong>Definition:</strong> ${entry.definition}</div>
+          ${entry.example?`<div class="mt-2"><em>Example: ${entry.example}</em></div>`:''}
+        `,
+        back:`<div class="word-display">${entry.word}</div>`,
+        entry
+      };
+    }
+
+    /* ---------- RENDER CURRENT QUESTION ---------- */
+    function showCurrentQuestion(){
+      if (currentIndex>=questions.length){ endExam(); return; }
+      const q = questions[currentIndex];
+      questionStartTime = Date.now();
+
+      let html = `<div class="timer text-muted">Question ${currentIndex+1} of ${questions.length}</div>`;
+      html += `<span class="badge bg-primary badge-type">${q.type}</span>`;
+      html += `<h5 class="mt-3">${q.question}</h5>`;
+
+      if(q.type==='MCQ'){
+        html += '<div class="options">';
+        q.options.forEach(opt=>{
+          html+=`<button class="option-btn w-100" onclick="selectMCQ('${esc(opt)}')">${opt}</button>`;
+        });
+        html+='</div>';
+      }
+      else if(q.type==='RCQ'){
+        html+=`
+          <div class="mt-4">
+            <input type="text" class="form-control input-answer" id="rcqInput" placeholder="Type your answer..." onkeypress="if(event.key==='Enter')checkRCQ()">
+            <button class="btn btn-primary mt-3" onclick="checkRCQ()">Submit</button>
+          </div>`;
+      }
+      else if(q.type==='TF'){
+        html+=`
+          <div class="d-flex gap-3 justify-content-center mt-4">
+            <button class="btn btn-success btn-lg" onclick="selectTF(true)">True</button>
+            <button class="btn btn-danger btn-lg" onclick="selectTF(false)">False</button>
+          </div>`;
+      }
+      else if(q.type==='Matching'){
+        html+=`<div class="row mt-4">`;
+        q.words.forEach(w=>html+=`<div class="col-6 mb-3"><strong>${w}</strong></div>`);
+        html+=`</div><div class="row">`;
+        q.pairs.forEach(p=>html+=`<div class="col-6 mb-3"><em>${p.def}</em></div>`);
+        html+=`</div><p class="text-muted">Review and click Next.</p>`;
+        html+=`<button class="btn btn-outline-primary mt-3" onclick="nextQuestion()">Next</button>`;
+      }
+      else if(q.type==='Flashcard'){
+        html+=`
+          <div class="flashcard" id="flashcard" onclick="flipCard()">
+            <div class="flashcard-inner">
+              <div class="flashcard-front">${q.front}</div>
+              <div class="flashcard-back">${q.back}</div>
+            </div>
+          </div>
+          <div class="mt-4 text-center">
+            <button class="btn btn-success" onclick="markKnown(event)">I Knew It</button>
+            <button class="btn btn-danger" onclick="markForgot(event)">I Forgot</button>
+          </div>`;
+      }
+
+      if(!['Matching','Flashcard'].includes(q.type)){
+        html+=`<div class="mt-4 text-center"><button class="btn btn-outline-secondary" onclick="nextQuestion()">Skip</button></div>`;
+      }
+
+      content.innerHTML = html;
+      updateProgress();
+    }
+
+    /* ---------- ANSWER HANDLERS ---------- */
+    function selectMCQ(selected){
+      const q = questions[currentIndex];
+      const correct = selected===q.correct;
+      if(correct){ score++; scoreByType.MCQ++; }
+      document.querySelectorAll('.option-btn').forEach(btn=>{
+        btn.disabled=true;
+        const txt=btn.textContent.trim();
+        if(txt===q.correct) btn.classList.add('correct');
+        else if(txt===selected && !correct) btn.classList.add('incorrect');
+      });
+      setTimeout(nextQuestion,1500);
+    }
+
+    function checkRCQ(){
+      const input = document.getElementById('rcqInput').value.trim().toLowerCase();
+      const q = questions[currentIndex];
+      const correct = input===q.correct;
+      if(correct){ score++; scoreByType.RCQ++; }
+      const msg = correct
+        ? `<div class="alert alert-success mt-3">Correct! The word is <strong>${q.entry.word}</strong></div>`
+        : `<div class="alert alert-danger mt-3">Incorrect. The word was <strong>${q.entry.word}</strong></div>`;
+      content.insertAdjacentHTML('beforeend',msg);
+      document.getElementById('rcqInput').disabled=true;
+      setTimeout(nextQuestion,2000);
+    }
+
+    function selectTF(selected){
+      const q = questions[currentIndex];
+      const correct = selected===q.correct;
+      if(correct){ score++; scoreByType.TF++; }
+      setTimeout(nextQuestion,1000);
+    }
+
+    function flipCard(){ document.getElementById('flashcard').classList.toggle('flipped'); }
+    function markKnown(e){ e.stopPropagation(); score++; scoreByType.Flashcard++; nextQuestion(); }
+    function markForgot(e){ e.stopPropagation(); nextQuestion(); }
+
+    function nextQuestion(){ currentIndex++; showCurrentQuestion(); }
+
+    function updateProgress(){
+      const prog = ((currentIndex + (questions[currentIndex]?.type==='Matching'?1:0)) / questions.length)*100;
+      progressBar.style.width = prog+'%';
+    }
+
+    /* ---------- END OF EXAM ---------- */
+    function endExam(){
+      const pct = Math.round((score/questions.length)*100);
+      const secs = Math.round((Date.now()-startTime)/1000);
+      let rows='';
+
+      Object.keys(totalByType).forEach(t=>{
+        if(totalByType[t]){
+          const tpct = Math.round((scoreByType[t]/totalByType[t])*100);
+          rows+=`<tr><td>${t}</td><td>${scoreByType[t]} / ${totalByType[t]}</td><td><strong>${tpct}%</strong></td></tr>`;
+        }
+      });
+
+      results.innerHTML = `
+        <h3 class="text-center mb-4">Exam Complete!</h3>
+        <div class="text-center mb-4">
+          <h2>${score} / ${questions.length} <small class="text-muted">(${pct}%)</small></h2>
+          <p>Time: ${Math.floor(secs/60)}m ${secs%60}s</p>
+          <p class="fs-4">${pct>=90?'Outstanding!':pct>=80?'Great Job!':pct>=60?'Good Effort!':'Keep Practicing!'}</p>
+        </div>
+        <h5>Score by Type</h5>
+        <table class="table table-sm results-table"><thead><tr><th>Type</th><th>Correct</th><th>%</th></tr></thead><tbody>${rows}</tbody></table>
+        <div class="text-center mt-4">
+          <button class="btn btn-primary me-2" onclick="restartExam()">Restart</button>
+          <button class="btn btn-secondary" onclick="goBack()">Back</button>
+        </div>`;
+      results.style.display='block';
+      content.style.display='none';
+
+      if(pct>=85){
+        const conf = new ConfettiGenerator({target:'confetti-canvas',max:200});
+        conf.render();
+        setTimeout(()=>conf.clear(),5000);
+      }
+    }
+
+    function restartExam(){
+      results.style.display='none';
+      content.style.display='block';
+      loadAllData();
+    }
+
+    /* ---------- UTILITIES ---------- */
+    function shuffle(a){ return a.sort(()=>Math.random()-.5); }
+    function esc(s){ return s.replace(/'/g,"\\'"); }
+    function goBack(){ history.back(); }
+
+    loadAllData();
+  </script>
+  <canvas id="confetti-canvas" class="confetti-canvas"></canvas>
+</body>
+</html>

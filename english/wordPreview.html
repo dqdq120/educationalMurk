@@ -14,6 +14,7 @@
     }
 
     .container {
+      max-width: 900px;
       margin: 0 auto;
       background: white;
       border-radius: 12px;
@@ -21,25 +22,65 @@
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
-    h1 {
-      color: #2a4b9b;
-      text-align: center;
-      margin-bottom: 10px;
+    h1 { color: #2a4b9b; text-align: center; margin-bottom: 10px; }
+    h2 { color: #333; margin-top: 25px; border-bottom: 1px solid #e0e4ff; padding-bottom: 8px; }
+
+    .definition-section {
+      background: #f9f9ff;
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+      position: relative;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: background 0.15s ease;
     }
 
-    h2 {
-      color: #333;
-      margin-top: 25px;
-    }
+    .definition-section.known   { background: #e6f4ea; }
+    .definition-section.unknown { background: #fce8e6; }
 
-    .meaning {
-      margin-bottom: 15px;
+    .definition-text {
+      margin: 8px 0;
+      line-height: 1.5;
+      padding-right: 110px;
+      flex-grow: 1;
     }
 
     .example {
       font-style: italic;
       color: #555;
+      margin: 8px 0 12px 0;
+      font-size: 0.95em;
+      padding-right: 110px;
     }
+
+    .action-buttons {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-known, .btn-unknown {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 80px;
+      text-align: center;
+    }
+
+    .btn-known   { background: #28a745; color: white; }
+    .btn-known:hover   { background: #218838; }
+    .btn-unknown { background: #dc3545; color: white; }
+    .btn-unknown:hover { background: #c82333; }
 
     button {
       background: #2a4b9b;
@@ -49,23 +90,12 @@
       border-radius: 8px;
       cursor: pointer;
       margin-bottom: 20px;
-      transition: background 0.2s;
     }
 
-    button:hover {
-      background: #1e3580;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    li {
-      margin: 5px 0;
-    }
+    button:hover { background: #1e3580; }
 
     .card {
-      background: #f9f9ff;
+      background: #f9f Definitions;
       padding: 15px;
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -80,7 +110,6 @@
       padding: 6px 12px;
       margin: 5px 5px 0 0;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
     }
 
     .affix-btn:hover {
@@ -88,45 +117,31 @@
       transform: scale(1.05);
     }
 
-    .ai-buttons {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .ai-buttons .affix-btn {
-      background: #d0dcff;
-    }
-
-    .ai-buttons .affix-btn:hover {
-      background: #b8c8ff;
-    }
+    .ai-buttons { text-align: center; margin: 30px 0; }
     .copilot-btn {
       background: #d0f0ff;
       color: #2a4b9b;
-      width: 50%;
+      width: 60%;
+      font-size: 1.1em;
+      padding: 12px;
+      background-image: url('icons8-microsoft-copilot-96.png');
+      background-repeat: no-repeat;
+      background-position: calc(100% - 10px) center;
+      background-size: 28px;
     }
-    .copilot-btn:hover {
-      background: #2a4b9b;
-      color: #ffffff;
-    }
+
+    .copilot-btn:hover { background: #2a4b9b; color: #fff; }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <button onclick="goBack()">← Back</button>
+    <button onclick="goBack()">Back</button>
     <h1 id="wordTitle">Loading...</h1>
-
-    
-
-    <div id="wordDetails">Fetching details... </div>
+    <div id="wordDetails">Fetching details...</div>
   </div>
 
   <script>
-    function goBack() {
-      window.history.back();
-    }
-
     const word = localStorage.getItem("selectedWord");
     const title = document.getElementById("wordTitle");
     const details = document.getElementById("wordDetails");
@@ -139,119 +154,166 @@
       loadWordDetails(word);
     }
 
+    // -----------------------------
+    // PHP Backend Calls
+    // -----------------------------
+    async function addUnknownDef(word, pos, def, example) {
+      const form = new FormData();
+      form.append('word', word);
+      form.append('partOfSpeech', pos);
+      form.append('definition', def);
+      if (example) form.append('example', example);
+
+      await fetch('addUnknownDef.php', { method: 'POST', body: form });
+    }
+
+    async function removeUnknownDef(word, pos, def) {
+      const form = new FormData();
+      form.append('word', word);
+      form.append('partOfSpeech', pos);
+      form.append('definition', def);
+
+      await fetch('removeUnknownDef.php', { method: 'POST', body: form });
+    }
+
+    async function getUnknownDefs() {
+      const res = await fetch('unknownDef.php');
+      return await res.json();
+    }
+
+    // -----------------------------
+    // Button Actions
+    // -----------------------------
+    async function markAs(status, event) {
+      const btn = event.target;
+      const section = btn.closest('.definition-section');
+      const def = section.dataset.definition;
+      const example = section.dataset.example || null;
+      const pos = section.dataset.partOfSpeech;
+
+      // Instant visual change
+      section.classList.remove('known', 'unknown');
+      section.classList.add(status);
+
+      if (status === 'unknown') {
+        await addUnknownDef(word, pos, def, example);
+      } else {
+        await removeUnknownDef(word, pos, def);
+      }
+    }
+
+    function addButtonListeners() {
+      document.querySelectorAll('.btn-known').forEach(b => {
+        b.addEventListener('click', e => markAs('known', e));
+      });
+      document.querySelectorAll('.btn-unknown').forEach(b => {
+        b.addEventListener('click', e => markAs('unknown', e));
+      });
+    }
+
+    // -----------------------------
+    // Apply Saved Unknown Status
+    // -----------------------------
+    async function applySavedStatus() {
+      const unknowns = await getUnknownDefs();
+      document.querySelectorAll('.definition-section').forEach(section => {
+        const def = section.dataset.definition;
+        const pos = section.dataset.partOfSpeech;
+
+        const isUnknown = unknowns.some(u =>
+          u.word === word &&
+          u.definition === def &&
+          u.partOfSpeech === pos
+        );
+
+        section.classList.remove('known', 'unknown');
+        if (isUnknown) section.classList.add('unknown');
+      });
+    }
+
+    // -----------------------------
+    // Load Word Data
+    // -----------------------------
     async function loadWordDetails(word) {
       details.innerHTML = "<p>Loading word details...</p>";
 
       let localData = null;
       let dictData = null;
 
-      // Fetch local word data with error handling
       try {
-        const localResponse = await fetch(`../merged_words/${word[0]}.json`);
-        if (localResponse.ok) {
-          const jsonData = await localResponse.json();
-          localData = jsonData.find(entry => entry.word.toLowerCase() === word.toLowerCase()) || null;
+        const localRes = await fetch(`../merged_words/${word[0]}.json`);
+        if (localRes.ok) {
+          const json = await localRes.json();
+          localData = json.find(e => e.word.toLowerCase() === word.toLowerCase()) || null;
         }
-      } catch (e) {
-        console.warn("No local file found for:", word);
-      }
+      } catch (e) { console.warn("No local file:", e); }
 
-      // Fetch dictionary API info with error handling
       try {
-        const response = await fetch(`https://freedictionaryapi.com/api/v1/entries/en/${encodeURIComponent(word)}`);
-        if (response.ok) {
-          dictData = await response.json();
-        }
-      } catch (e) {
-        console.error('Dictionary API fetch error:', e);
-      }
+        const dictRes = await fetch(`https://freedictionaryapi.com/api/v1/entries/en/${encodeURIComponent(word)}`);
+        if (dictRes.ok) dictData = await dictRes.json();
+      } catch (e) { console.error('API error:', e); }
 
-      const copilotBtnHTML = `<div class="ai-buttons">
-                                <button class="card copilot-btn" style="background-image: url('icons8-microsoft-copilot-96.png');background-repeat: no-repeat;background-position: calc(100% - 2px);background-size: contain;" onclick="askCopilot()">Ask Copilot &nbsp;&nbsp;&nbsp;&nbsp;</button>
-                              </div>`;
+      const copilotBtn = `<div class="ai-buttons">
+        <button class="card copilot-btn" onclick="askCopilot()">Ask Copilot</button>
+      </div>`;
 
-      if (!dictData || !dictData.entries || dictData.entries.length === 0) {
-        details.innerHTML = copilotBtnHTML;
+      if (!dictData?.entries?.length) {
+        details.innerHTML = copilotBtn;
         return;
       }
 
       details.innerHTML = "";
-
-      // Pronunciation from first entry
-      const firstEntry = dictData.entries[0];
-      if (firstEntry.pronunciations && firstEntry.pronunciations.length > 0) {
-        details.innerHTML += `<p><strong>Pronunciation:</strong> ${firstEntry.pronunciations[0].text}</p>`;
+      if (dictData.entries[0].pronunciations?.[0]?.text) {
+        details.innerHTML += `<p><strong>Pronunciation:</strong> ${dictData.entries[0].pronunciations[0].text}</p>`;
       }
 
-      // Add main meanings with examples
       dictData.entries.forEach(entry => {
-        let posContent = `<h2>${entry.partOfSpeech}</h2>`;
-        if (entry.senses && entry.senses.length > 0) {
-          entry.senses.forEach(sense => {
-            posContent += `
-              <p><strong>Definition:</strong> ${sense.definition}</p>
-              ${sense.examples && sense.examples.length > 0 ? `<p class="example">Example: ${sense.examples[0]}</p>` : ""}
-            `;
-          });
-        }
-        details.innerHTML += `<div class="card">${posContent}</div>`;
+        const pos = entry.partOfSpeech || "Unknown";
+        let html = `<h2>${pos}</h2>`;
+
+        entry.senses?.forEach(sense => {
+          const example = sense.examples?.[0] || null;
+          const safeDef = sense.definition.replace(/"/g, '&quot;');
+          const safeEx = example ? example.replace(/"/g, '&quot;') : '';
+
+          html += `
+            <div class="definition-section"
+                 data-definition="${safeDef}"
+                 data-part-of-speech="${pos}"
+                 data-example="${safeEx}">
+              <p class="definition-text"><strong>Definition:</strong> ${sense.definition}</p>
+              ${example ? `<p class="example">Example: ${example}</p>` : ""}
+              <div class="action-buttons">
+                <button class="btn-unknown">Unknown</button>
+                <button class="btn-known">Known</button>
+              </div>
+            </div>
+          `;
+        });
+
+        details.innerHTML += `<div class="card">${html}</div>`;
       });
 
-      // Add prefixes and suffixes from local data
+      // Local extras
       if (localData) {
-        if (localData.prefixes && localData.prefixes.length > 0) {
-          details.innerHTML += `
-            <div class="card">
-              <h2>Prefixes</h2>
-              ${localData.prefixes.map(p => `<button class="affix-btn" onclick="openPrefix('${p.replace(/[-]/g, "")}')">${p}</button>`).join("")}
-            </div>
-          `;
-        }
-
-        if (localData.suffixes && localData.suffixes.length > 0) {
-          details.innerHTML += `
-            <div class="card">
-              <h2>Suffixes</h2>
-              ${localData.suffixes.map(s => `<button class="affix-btn" onclick="openSufffix('${s.replace(/[-]/g, "")}')">${s}</button>`).join("")}
-            </div>
-          `;
-        }
-
-        if (localData.examples && localData.examples.length > 0) {
-          details.innerHTML += `
-            <div class="card">
-              <h2>Extra Examples</h2>
-              <ul>${localData.examples.map(e => `<li>${e}</li>`).join("")}</ul>
-            </div>
-          `;
-        }
+        if (localData.prefixes?.length) details.innerHTML += `<div class="card"><h2>Prefixes</h2>${localData.prefixes.map(p => `<button class="affix-btn" onclick="openPrefix('${p.replace(/[-]/g,"")}')">${p}</button>`).join("")}</div>`;
+        if (localData.suffixes?.length) details.innerHTML += `<div class="card"><h2>Suffixes</h2>${localData.suffixes.map(s => `<button class="affix-btn" onclick="openSufffix('${s.replace(/[-]/g,"")}')">${s}</button>`).join("")}</div>`;
+        if (localData.examples?.length) details.innerHTML += `<div class="card"><h2>Extra Examples</h2><ul>${localData.examples.map(e=>`<li>${e}</li>`).join("")}</ul></div>`;
       }
 
-      details.innerHTML += copilotBtnHTML;
+      details.innerHTML += copilotBtn;
+
+      // Finalize
+      requestAnimationFrame(() => {
+        addButtonListeners();
+        applySavedStatus();
+      });
     }
 
-    // 🔹 When user clicks a prefix or suffix button
-    function openPrefix(prefix) {
-      localStorage.setItem("selectedWord", prefix + word);
-      window.location.assign("wordPreview.html");
-    }
-
-    function openSufffix(suffix) {
-      localStorage.setItem("selectedWord", word + suffix);
-      window.location.assign("wordPreview.html");
-    }
-
-    // 🔹 Ask ChatGPT or Copilot about the word
-    function askChatGPT() {
-      const prompt = encodeURIComponent(`Explain the meaning or usage of the word "${word}" in simple terms.`);
-      window.open(`https://chat.openai.com/?q=${prompt}`, "_blank");
-    }
-
-    function askCopilot() {
-      const prompt = encodeURIComponent(`Explain the meaning or usage of the word "${word}" in simple terms.`);
-      window.open(`https://copilot.microsoft.com/?q=${prompt}`, "_blank");
-    }
+    function openPrefix(p) { localStorage.setItem("selectedWord", p + word); location.assign("wordPreview.html"); }
+    function openSufffix(s) { localStorage.setItem("selectedWord", word + s); location.assign("wordPreview.html"); }
+    function askCopilot() { open(`https://copilot.microsoft.com/?q=${encodeURIComponent('Explain "'+word+'" in simple terms.')}`, "_blank"); }
+    function goBack() { history.back(); }
   </script>
-
 </body>
 </html>

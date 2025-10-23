@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unknown Definitions Preview</title>
+  <style>
+    body {
+      font-family: "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(to bottom right, #eef3ff, #d8e1ff);
+      color: #222;
+      margin: 0;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    h1 { color: #2a4b9b; text-align: center; margin-bottom: 10px; }
+    h2 { color: #333; margin-top: 25px; border-bottom: 1px solid #e0e4ff; padding-bottom: 8px; }
+    h3 { color: #444; margin: 18px 0 10px; font-size: 1.1em; font-weight: 600; }
+
+    .definition-section {
+      padding: 16px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+      position: relative;
+      min-height: 170px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: all 0.3s ease;
+    }
+
+    .definition-section.unknown   { background: #fce8e6; }
+    .definition-section.training  { background: #fff3cd; }
+    .definition-section.known     { background: #e6f4ea; }
+
+    .definition-text { margin: 8px 0; line-height: 1.5; flex-grow: 1; }
+    .example { font-style: italic; color: #555; margin: 8px 0 12px 0; font-size: 0.95em; }
+    .timestamp { color: #888; font-size: 0.8em; margin-top: auto; }
+
+    .action-buttons {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .btn-knew-it, .btn-add-training {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.85em;
+      font-weight: 600;
+      cursor: pointer;
+      width: 90px;
+      text-align: center;
+    }
+
+    .btn-knew-it   { background:#28a745; color:white; }
+    .btn-knew-it:hover   { background:#218838; }
+    .btn-add-training { background:#ffc107; color:#212529; }
+    .btn-add-training:hover { background:#e0a800; }
+    .btn-added-training { background:#28a745; color:white; }
+    .btn-added-training:hover { background:#218838; }
+
+    button {
+      background:#2a4b9b; color:white; border:none;
+      padding:10px 20px; border-radius:8px; cursor:pointer;
+      margin-bottom:20px;
+    }
+    button:hover { background:#1e3580; }
+
+    .no-data { text-align:center; color:#666; font-style:italic; padding:40px; font-size:1.1em; }
+
+    .card { background:#f9f9ff; padding:20px; border-radius:10px;
+            box-shadow:0 2px 6px rgba(0,0,0,0.1); margin-bottom:20px; }
+
+    .exam-link { display:inline-block; margin:10px 0; padding:10px 20px;
+                 background:#2a4b9b; color:white; text-decoration:none;
+                 border-radius:8px; font-weight:600; }
+    .exam-link:hover { background:#1e3580; }
+
+    .removing {
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <button onclick="goBack()">Back</button>
+  <h1>Unknown Definitions Preview</h1>
+
+  <div style="text-align:center;margin-bottom:20px;">
+    <a href="trainingExam.html" target="_blank" class="exam-link">Start Training Exam</a>
+  </div>
+
+  <div id="unknownDetails">Loading…</div>
+</div>
+
+<script>
+  const details = document.getElementById("unknownDetails");
+
+  function defKey(entry) {
+    return `${entry.word}|${entry.partOfSpeech}|${entry.definition}`;
+  }
+
+  async function loadData() {
+    let unknowns = [], training = [];
+    try {
+      const u = await fetch('unknown_defs.json');
+      if (u.ok) unknowns = await u.json();
+    } catch(e){ console.warn('unknown_defs.json not found', e); }
+
+    try {
+      const t = await fetch('training_defs.json');
+      if (t.ok) training = await t.json();
+    } catch(e){ console.warn('training_defs.json not found', e); }
+
+    return { unknowns, training };
+  }
+
+  async function render() {
+    details.innerHTML = "<p>Loading data…</p>";
+    const { unknowns, training } = await loadData();
+
+    if (!unknowns.length) {
+      details.innerHTML = '<div class="no-data">No unknown words to preview!</div>';
+      return;
+    }
+
+    const trainingSet = new Set(training.map(defKey));
+
+    const grouped = {};
+    unknowns.forEach(e => {
+      const w = e.word;
+      const p = e.partOfSpeech;
+      if (!grouped[w]) grouped[w] = {};
+      if (!grouped[w][p]) grouped[w][p] = [];
+      grouped[w][p].push(e);
+    });
+
+    let html = '';
+    Object.keys(grouped).sort().forEach(word => {
+      html += `<h2>${word}</h2>`;
+      Object.keys(grouped[word]).forEach(pos => {
+        html += `<h3>${pos}</h3>`;
+        grouped[word][pos].forEach(entry => {
+          const safeDef = entry.definition.replace(/"/g, '&quot;');
+          const safeEx  = entry.example ? entry.example.replace(/"/g, '&quot;') : '';
+          const ts      = new Date(entry.timestamp).toLocaleString();
+
+          const isTraining = trainingSet.has(defKey(entry));
+          const stateClass = isTraining ? 'training' : 'unknown';
+
+          html += `
+            <div class="definition-section ${stateClass}"
+                 data-word="${entry.word}"
+                 data-pos="${entry.partOfSpeech}"
+                 data-definition="${safeDef}"
+                 data-example="${safeEx}">
+              <p class="definition-text"><strong>Definition:</strong> ${entry.definition}</p>
+              ${entry.example ? `<p class="example">Example: ${entry.example}</p>` : ''}
+              <p class="timestamp">Added: ${ts}</p>
+              <div class="action-buttons">
+                <button class="btn-knew-it">Knew It</button>
+                <button class="btn-add-training ${isTraining ? 'btn-added-training' : ''}">
+                  ${isTraining ? 'In Training' : 'Add as Training'}
+                </button>
+              </div>
+            </div>`;
+        });
+      });
+    });
+
+    details.innerHTML = `<div class="card">${html}</div>`;
+    attachButtonListeners();
+  }
+
+  // === ADD TO TRAINING ===
+  async function addToTraining(event) {
+    const section = event.target.closest('.definition-section');
+    const word = section.dataset.word;
+    const pos  = section.dataset.pos;
+    const def  = section.dataset.definition;
+    const ex   = section.dataset.example || null;
+
+    const form = new FormData();
+    form.append('word', word);
+    form.append('partOfSpeech', pos);
+    form.append('definition', def);
+    if (ex) form.append('example', ex);
+    form.append('timestamp', new Date().toISOString());
+
+    try {
+      const res = await fetch('addAsTraining.php', { method: 'POST', body: form });
+      if (!res.ok) throw new Error('Server error');
+
+      section.classList.remove('unknown');
+      section.classList.add('training');
+      const btn = section.querySelector('.btn-add-training');
+      btn.textContent = 'In Training';
+      btn.classList.add('btn-added-training');
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  // === MARK AS KNOWN: Remove from BOTH files + UI ===
+  async function markKnewIt(event) {
+    const section = event.target.closest('.definition-section');
+    const word = section.dataset.word;
+    const pos  = section.dataset.pos;
+    const def  = section.dataset.definition;
+
+    // 1. Visual: turn green
+    section.classList.remove('unknown', 'training');
+    section.classList.add('known');
+
+    // 2. Fade out and remove from DOM
+    section.classList.add('removing');
+    setTimeout(() => {
+      section.remove();
+      cleanupEmptyHeaders();
+    }, 300);
+
+    // 3. Remove from unknown_defs.json
+    await removeUnknownDef(word, pos, def);
+
+    // 4. Remove from training_defs.json (if exists)
+    await removeFromTraining(word, pos, def);
+  }
+
+  // === Remove from unknown_defs.json ===
+  async function removeUnknownDef(word, pos, def) {
+    const form = new FormData();
+    form.append('word', word);
+    form.append('partOfSpeech', pos);
+    form.append('definition', def);
+
+    try {
+      await fetch('removeUnknownDef.php', { method: 'POST', body: form });
+      console.log(`Removed "${word}" from unknown_defs.json`);
+    } catch (e) {
+      console.error('Failed to remove from unknown:', e);
+    }
+  }
+
+  // === NEW: Remove from training_defs.json ===
+  async function removeFromTraining(word, pos, def) {
+    const form = new FormData();
+    form.append('word', word);
+    form.append('partOfSpeech', pos);
+    form.append('definition', def);
+
+    try {
+      await fetch('removeFromTraining.php', { method: 'POST', body: form });
+      console.log(`Removed "${word}" from training_defs.json`);
+    } catch (e) {
+      console.error('Failed to remove from training:', e);
+    }
+  }
+
+  // Cleanup empty headers
+  function cleanupEmptyHeaders() {
+    document.querySelectorAll('h3').forEach(h => {
+      const next = h.nextElementSibling;
+      if (!next || !next.classList.contains('definition-section')) h.remove();
+    });
+    document.querySelectorAll('h2').forEach(h => {
+      const next = h.nextElementSibling;
+      if (!next || (!next.matches('h3') && !next.classList.contains('definition-section'))) h.remove();
+    });
+  }
+
+  function attachButtonListeners() {
+    document.querySelectorAll('.btn-add-training').forEach(b =>
+      b.addEventListener('click', addToTraining));
+    document.querySelectorAll('.btn-knew-it').forEach(b =>
+      b.addEventListener('click', markKnewIt));
+  }
+
+  render();
+  function goBack() { history.back(); }
+</script>
+</body>
+</html>
