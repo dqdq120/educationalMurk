@@ -1,526 +1,863 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordMaster Dictionary & Education</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <style>
-        body {
-            background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
-            width: 100vw;
-            overflow-x: hidden;
-        }
-        .rectangle-rise {
-            transition: transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out;
-            position: relative;
-            overflow: hidden;
-            width: 300px;
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .rectangle-rise:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-        .rectangle-animation {
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 40px;
-            background: linear-gradient(to bottom, #3b82f6, #1e40af);
-            overflow: hidden;
-        }
-        .rectangle-animation span {
-            position: absolute;
-            width: 4px;
-            height: 20px;
-        }
-        .rect1 { 
-            background: #ff4d4f; 
-            left: 2px; 
-            animation: moveRectangles1 1.5s linear infinite; 
-        }
-        .rect2 { 
-            background: #4ade80; 
-            left: 7px; 
-            animation: moveRectangles2 1.3s linear infinite; 
-        }
-        .rect3 { 
-            background: #facc15; 
-            left: 12px; 
-            animation: moveRectangles1 1.7s linear infinite; 
-        }
-        .rect4 { 
-            background: #60a5fa; 
-            left: 17px; 
-            animation: moveRectangles2 1.4s linear infinite; 
-        }
-        .rect5 { 
-            background: #f472b6; 
-            left: 22px; 
-            animation: moveRectangles1 1.6s linear infinite; 
-        }
-        .rect6 { 
-            background: #34d399; 
-            left: 27px; 
-            animation: moveRectangles2 1.2s linear infinite; 
-        }
-        .rect7 { 
-            background: #a78bfa; 
-            left: 32px; 
-            animation: moveRectangles1 1.8s linear infinite; 
-        }
-        .rect8 { 
-            background: #fb923c; 
-            left: 37px; 
-            animation: moveRectangles2 1.5s linear infinite; 
-        }
-        @keyframes moveRectangles1 {
-            0% { transform: translateY(-20px) scale(1); }
-            50% { transform: translateY(110px) scale(1.2); }
-            100% { transform: translateY(220px) scale(1); }
-        }
-        @keyframes moveRectangles2 {
-            0% { transform: translateY(-20px) scale(1); }
-            50% { transform: translateY(110px) scale(0.8); }
-            100% { transform: translateY(220px) scale(1); }
-        }
-        .swiper-slide {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .auth-form {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 0;
-            transform: translateY(20px);
-        }
-        .auth-form.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .fade-in {
-            animation: fadeIn 1s ease-in-out;
-        }
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
-        }
-        .exam-level {
-            width: 200px;
-            height: 120px;
-        }
-        .grammar-card {
-            width: 300px;
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        .mastery-exam {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .mastery-card {
-            width: 848px; /* Matches 4 * 200px + 3 * 16px gap */
-            height: 120px;
-        }
-        .search-result {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>EnglishMurk - Interactive English Learning</title>
+
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- AOS (Animate On Scroll) -->
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+  <style>
+    @charset "utf-8";
+
+    /* Reset & Base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: "Roboto", sans-serif;
+      font-size: 16px;
+      min-height: 100vh;
+      background: #f0f4f8;
+      overflow-x: hidden;
+      padding-top: 80px;
+      background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
+    }
+
+    /* ==================== NAVBAR ==================== */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 80px;
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 80px;
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+    .navbar.scrolled {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+    .navbar .logo {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700;
+      font-size: 28px;
+      color: #1a73e8;
+      letter-spacing: -0.5px;
+    }
+    .navbar .logo span {
+      color: #333;
+    }
+    .nav-links {
+      display: flex;
+      gap: 40px;
+      list-style: none;
+    }
+    .nav-links a {
+      color: #333;
+      font-weight: 500;
+      font-size: 15px;
+      position: relative;
+      text-decoration: none;
+      padding: 8px 0;
+      transition: color 0.3s ease;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: #1a73e8;
+      transition: width 0.3s ease;
+    }
+    .nav-links a:hover {
+      color: #1a73e8;
+    }
+    .nav-links a:hover::after {
+      width: 100%;
+    }
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+    }
+    .menu-toggle span {
+      width: 25px;
+      height: 3px;
+      background: #333;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* ==================== SLIDER SECTION ==================== */
+    .education-section {
+      height: calc(100vh - 80px);
+      padding: 60px 80px;
+      position: relative;
+      background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
+    }
+    .swiper {
+      height: 100%;
+    }
+    .swiper-slide {
+      width: 320px !important;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 20px;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+      cursor: pointer;
+      display: flex;
+      align-items: flex-end;
+      margin-bottom: 60px;
+      opacity: 0.7;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      padding-bottom: 6%;
+      transform: translateY(20px);
+    }
+    .swiper-slide.active {
+      width: 70% !important;
+      box-shadow: 15px 50px 80px rgba(0, 0, 0, 0.35);
+      opacity: 1;
+      padding-bottom: 0%;
+      z-index: 2;
+      transform: translateY(0);
+    }
+    .slide-icon {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      font-size: 52px;
+      color: rgba(255,255,255,0.25);
+      transition: all 0.5s ease;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+    }
+    .swiper-slide.active .slide-icon {
+      color: rgba(255,255,255,0.5);
+      transform: scale(1.2) rotate(5deg);
+    }
+    .item-desc {
+      padding: 0 36px 36px;
+      color: #fff;
+      position: relative;
+      z-index: 1;
+      transform: translateY(calc(100% - 70px));
+      transition: transform 0.5s ease;
+    }
+    .swiper-slide.active .item-desc {
+      transform: translateY(0);
+    }
+    .item-desc h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 32px;
+      margin-bottom: 14px;
+      font-weight: 700;
+    }
+    .item-desc .level {
+      display: inline-block;
+      background: rgba(255,255,255,0.25);
+      padding: 6px 14px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .item-desc p {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.5s ease 0.2s;
+      font-size: 16px;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+    .swiper-slide.active .item-desc p {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .item-desc .cta {
+      opacity: 0;
+      font-weight: 700;
+      font-size: 15px;
+      transition: opacity 0.5s ease 0.4s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .item-desc .cta::after {
+      content: '→';
+      transition: transform 0.3s ease;
+    }
+    .swiper-slide.active .item-desc .cta {
+      opacity: 1;
+    }
+    .item-desc .cta:hover::after {
+      transform: translateX(6px);
+    }
+
+    /* Tier Colors */
+    .slide-beginner { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
+    .slide-intermediate { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
+    .slide-advanced { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
+    .slide-vocabulary { background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); }
+    .slide-grammar { background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); }
+    .slide-speaking { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+
+    /* Pagination */
+    .swiper-pagination {
+      position: relative;
+      margin-top: -20px;
+      z-index: 5;
+    }
+    .swiper-pagination-bullet {
+      background: #ccc;
+      opacity: 0.5;
+      width: 12px;
+      height: 12px;
+      transition: all 0.3s ease;
+    }
+    .swiper-pagination-bullet-active {
+      background: #1a73e8;
+      opacity: 1;
+      transform: scale(1.3);
+    }
+
+    /* ==================== BIGGER, ANIMATED CONTENT SECTION ==================== */
+    .content-sections {
+      padding: 120px 80px 80px;
+      background: #ffffff;
+      position: relative;
+      overflow: hidden;
+    }
+    .content-sections::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(to bottom, #f0f4f8, transparent);
+      pointer-events: none;
+      z-index: 1;
+    }
+    .section-title {
+      text-align: center;
+      margin-bottom: 80px;
+      font-family: 'Poppins', sans-serif;
+    }
+    .section-title h2 {
+      font-size: 48px;
+      font-weight: 700;
+      color: #1a73e8;
+      margin-bottom: 16px;
+      position: relative;
+      display: inline-block;
+    }
+    .section-title h2::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 5px;
+      background: #1a73e8;
+      border-radius: 3px;
+    }
+    .section-title p {
+      font-size: 18px;
+      color: #555;
+      max-width: 700px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 40px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .content-card {
+      background: #fff;
+      border-radius: 24px;
+      padding: 40px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: 1px solid rgba(26, 115, 232, 0.1);
+    }
+    .content-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: var(--gradient);
+      transition: all 0.4s ease;
+    }
+    .content-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: 0 25px 60px rgba(0,0,0,0.2);
+    }
+    .content-card .icon-wrapper {
+      width: 80px;
+      height: 80px;
+      background: var(--gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    .content-card .icon-wrapper::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.2);
+      border-radius: 50%;
+      transform: scale(0);
+      transition: transform 0.4s ease;
+    }
+    .content-card:hover .icon-wrapper::after {
+      transform: scale(1);
+    }
+    .content-card .icon {
+      font-size: 36px;
+      color: white;
+      z-index: 2;
+      transition: transform 0.4s ease;
+    }
+    .content-card:hover .icon {
+      transform: scale(1.2) rotate(10deg);
+    }
+    .content-card .level {
+      display: inline-block;
+      background: rgba(26, 115, 232, 0.1);
+      color: #1a73e8;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .content-card h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 28px;
+      margin-bottom: 16px;
+      color: #1a1a1a;
+      font-weight: 600;
+    }
+    .content-card p {
+      font-size: 16px;
+      line-height: 1.8;
+      color: #555;
+      margin-bottom: 24px;
+    }
+    .content-card .cta {
+      font-weight: 700;
+      font-size: 15px;
+      color: #1a73e8;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+    }
+    .content-card .cta::after {
+      content: '→';
+      font-weight: bold;
+      transition: transform 0.3s ease;
+    }
+    .content-card:hover .cta::after {
+      transform: translateX(8px);
+    }
+
+    /* Gradient per card */
+    .card-beginner { --gradient: linear-gradient(135deg, #4facfe, #00f2fe); }
+    .card-intermediate { --gradient: linear-gradient(135deg, #43e97b, #38f9d7); }
+    .card-advanced { --gradient: linear-gradient(135deg, #fa709a, #fee140); }
+    .card-vocabulary { --gradient: linear-gradient(135deg, #a8edea, #fed6e3); }
+    .card-grammar { --gradient: linear-gradient(135deg, #ff9a9e, #fecfef); }
+    .card-speaking { --gradient: linear-gradient(135deg, #667eea, #764ba2); }
+
+    /* ==================== RESPONSIVE ==================== */
+    
+    /* Large screens and desktops */
+    @media (max-width: 1400px) {
+      .swiper-slide.active {
+        width: 65% !important;
+      }
+    }
+    
+    /* Laptops and smaller desktops */
+    @media (max-width: 1200px) {
+      .swiper-slide.active {
+        width: 60% !important;
+      }
+    }
+    
+    /* Tablet landscape and small laptops */
+    @media (max-width: 992px) {
+      .navbar { padding: 0 40px; }
+      .nav-links { gap: 30px; }
+      .education-section { 
+        padding: 40px 40px; 
+        height: auto;
+        min-height: calc(100vh - 80px);
+      }
+      .content-sections { padding: 100px 40px 60px; }
+      .section-title h2 { font-size: 40px; }
+      .swiper-slide.active {
+        width: 80% !important;
+      }
+      .content-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+      }
+    }
+    
+    /* Tablet portrait and large phones */
+    @media (max-width: 768px) {
+      .navbar { padding: 0 20px; }
+      .nav-links {
+        position: fixed;
+        top: 80px;
+        left: 0;
+        width: 100%;
+        background: rgba(255, 255, 255, 0.98);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        align-items: center;
+        padding: 20px 0;
+        gap: 20px;
+        transform: translateY(-100%);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s ease;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      }
+      .nav-links.active {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+      }
+      .menu-toggle { display: flex; }
+      .education-section { 
+        padding: 40px 20px; 
+        min-height: calc(100vh - 80px);
+      }
+      .content-sections { padding: 80px 20px 40px; }
+      .content-grid { 
+        grid-template-columns: 1fr;
+        gap: 30px;
+      }
+      .content-card { padding: 32px; }
+      .section-title h2 { font-size: 36px; }
+      
+      /* Mobile slider styles */
+      .swiper-slide {
+        width: 100% !important;
+        margin-bottom: 30px;
+        opacity: 1;
+      }
+      .swiper-slide.active {
+        width: 100% !important;
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+      }
+      .item-desc {
+        transform: translateY(0);
+      }
+      .item-desc p,
+      .item-desc .cta {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .slide-icon {
+        color: rgba(255,255,255,0.5);
+        transform: scale(1.2) rotate(5deg);
+      }
+    }
+    
+    /* Small phones */
+    @media (max-width: 576px) {
+      .navbar .logo { font-size: 22px; }
+      .education-section { padding: 30px 15px; }
+      .content-sections { padding: 60px 15px 30px; }
+      .swiper-slide {
+        width: 100% !important;
+        transform: none !important;
+      }
+      .swiper-slide.active {
+        width: 100% !important;
+        transform: none !important;
+      }
+      .item-desc h3 { font-size: 26px; }
+      .content-card h3 { font-size: 24px; }
+      .content-card { padding: 28px; }
+      .section-title h2 { font-size: 32px; }
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* Foldable devices (dual-screen) */
+    @media (max-width: 768px) and (min-aspect-ratio: 11/10) and (orientation: landscape) {
+      .education-section {
+        height: auto;
+        min-height: calc(100vh - 80px);
+      }
+      
+      .content-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .swiper-slide {
+        width: 45% !important;
+      }
+      
+      .swiper-slide.active {
+        width: 90% !important;
+      }
+    }
+    
+    /* Large foldable screens (tablet mode) */
+    @media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+      .education-section {
+        padding: 40px 30px;
+      }
+      
+      .swiper-slide.active {
+        width: 70% !important;
+      }
+      
+      .content-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+    
+    /* Large foldable screens (landscape mode) */
+    @media (min-width: 769px) and (max-width: 1024px) and (orientation: landscape) {
+      .education-section {
+        padding: 40px 50px;
+      }
+      
+      .swiper-slide.active {
+        width: 50% !important;
+      }
+      
+      .content-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    
+    /* Extra large screens */
+    @media (min-width: 1600px) {
+      .content-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+  </style>
 </head>
-<body class="min-h-screen">
-    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-8 text-center shadow-lg">
-        <h1 class="text-4xl font-bold">WordMaster Dictionary & Education System</h1>
-    </header>
-    
+<body>
 
-    
-    <div id="auth-forms" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-md">
-            <form id="signin-form" class="auth-form hidden">
-                <h2 class="text-2xl font-semibold mb-4">Sign In</h2>
-                <input type="email" placeholder="Email" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <input type="password" placeholder="Password" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300">Sign In</button>
-                <button type="button" onclick="hideForm()" class="w-full mt-2 text-gray-600 hover:text-blue-600">Close</button>
-            </form>
-            <form id="signup-form" class="auth-form hidden">
-                <h2 class="text-2xl font-semibold mb-4">Sign Up</h2>
-                <input type="text" placeholder="Username" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <input type="email" placeholder="Email" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <input type="password" placeholder="Password" required class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-                <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition duration-300">Sign Up</button>
-                <button type="button" onclick="hideForm()" class="w-full mt-2 text-gray-600 hover:text-blue-600">Close</button>
-            </form>
+<!-- NAVBAR -->
+<nav class="navbar" id="navbar">
+  <div class="logo">English<span>Murk</span></div>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="">Home</a></li>
+    <li><a href="">Courses</a></li>
+    <li><a href="">Practice</a></li>
+    <li><a href="">Progress</a></li>
+    <li><a href="">Community</a></li>
+  </ul>
+  <div class="menu-toggle" id="menuToggle">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- SLIDER SECTION -->
+<section class="education-section">
+  <div class="swiper custom-carousel">
+    <div class="swiper-wrapper">
+      <!-- Slides (same as before) -->
+      <div class="swiper-slide item slide-beginner">
+        <i class="fas fa-seedling slide-icon"></i>
+        <div class="item-desc">
+          <span class="level">BEGINNER</span>
+          <h3>English Foundations</h3>
+          <p>Start your journey with basic greetings, alphabet, numbers, and simple sentences. Perfect for absolute beginners.</p>
+          <div class="cta">Start Learning</div>
         </div>
+      </div>
+      <div class="swiper-slide item slide-vocabulary">
+        <i class="fas fa-book-open slide-icon"></i>
+        <div class="item-desc">
+          <span class="level">ALL LEVELS</span>
+          <h3>Daily Vocabulary</h3>
+          <p>Expand your word bank with 10 new words daily. Includes examples, pronunciation, and memory games.</p>
+          <div class="cta">Build Your Vocab</div>
+        </div>
+      </div>
+      <div class="swiper-slide item slide-grammar">
+        <i class="fas fa-cogs slide-icon"></i>
+        <div class="item-desc">
+          <span class="level">INTERMEDIATE</span>
+          <h3>Grammar Mastery</h3>
+          <p>Deep dive into tenses, conditionals, and sentence structure with interactive exercises and quizzes.</p>
+          <div class="cta">Fix Your Grammar</div>
+        </div>
+      </div>
+      <div class="swiper-slide item slide-intermediate">
+        <i class="fas fa-book-reader slide-icon"></i>
+        <div class="item-desc">
+          <span class="level">INTERMEDIATE</span>
+          <h3>Reading Lab</h3>
+          <p>Improve comprehension with graded stories, news articles, and speed reading challenges.</p>
+          <div class="cta">Start Reading</div>
+        </div>
+      </div>
+      <div class="swiper-slide item slide-speaking">
+        <i class="fas fa-microphone-alt slide-icon"></i>
+        <div class="item-desc">
+          <span class="level">ADVANCED</span>
+          <h3>Fluent Speaking</h3>
+          <p>Practice real conversations, pronunciation, and fluency with AI voice feedback and role-play scenarios.</p>
+          <div class="cta">Speak Now</div>
+        </div>
+      </div>
+      <div class="swiper-slide item slide-advanced">
+        <i class="fas fa-pen-fancy slide-icon"></i>
+        <div class="item-desc">
+          <span class="level">ADVANCED</span>
+          <h3>Professional Writing</h3>
+          <p>Master emails, essays, reports, and creative writing with feedback and style improvement tools.</p>
+          <div class="cta">Write Like a Pro</div>
+        </div>
+      </div>
     </div>
-    
-    <section id="search-section" class="py-12 text-center fade-in">
-        <h2 class="text-3xl font-semibold mb-6">Search for Words</h2>
-        <div class="flex justify-center items-center max-w-2xl mx-auto">
-            <input type="text" id="search-input" placeholder="Enter a word..." class="w-full p-4 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-600">
-            <button id="search-button" onclick="searchWord()" class="bg-blue-600 text-white p-4 rounded-r-lg hover:bg-blue-700 transition duration-300">Search</button>
-        </div>
-        <div id="result" class="search-result hidden"></div>
-    </section>
-    
-    <section id="education-section" class="py-12 text-center fade-in">
-        <h2 class="text-3xl font-semibold mb-6">Educational Tiers</h2>
-        <div class="swiper education-swiper" style="max-width: 1200px; margin: auto;">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 1</h3>
-                        <p>5000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 2</h3>
-                        <p>10000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                            <span class="rect3"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 3</h3>
-                        <p>15000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                            <span class="rect3"></span>
-                            <span class="rect4"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 4</h3>
-                        <p>20000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                            <span class="rect3"></span>
-                            <span class="rect4"></span>
-                            <span class="rect5"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 5</h3>
-                        <p>25000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                            <span class="rect3"></span>
-                            <span class="rect4"></span>
-                            <span class="rect5"></span>
-                            <span class="rect6"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 6</h3>
-                        <p>30000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                            <span class="rect3"></span>
-                            <span class="rect4"></span>
-                            <span class="rect5"></span>
-                            <span class="rect6"></span>
-                            <span class="rect7"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 7</h3>
-                        <p>35000 Words</p>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="rectangle-rise bg-white rounded-lg shadow-lg text-center cursor-pointer">
-                        <div class="rectangle-animation">
-                            <span class="rect1"></span>
-                            <span class="rect2"></span>
-                            <span class="rect3"></span>
-                            <span class="rect4"></span>
-                            <span class="rect5"></span>
-                            <span class="rect6"></span>
-                            <span class="rect7"></span>
-                            <span class="rect8"></span>
-                        </div>
-                        <h3 class="text-xl font-semibold">Tier 8</h3>
-                        <p>40000 Words</p>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-pagination"></div>
-        </div>
-      </section>
-      <section id="exams-section" class="py-12 text-center fade-in">
-          <h2 class="text-3xl font-semibold mb-6">8 Levels of Examinations</h2>
-          <div class="flex justify-center flex-wrap gap-4">
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 1</p>
-              </div>
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 2</p>
-              </div>
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                      <span class="rect3"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 3</p>
-              </div>
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                      <span class="rect3"></span>
-                      <span class="rect4"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 4</p>
-              </div>
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                      <span class="rect3"></span>
-                      <span class="rect4"></span>
-                      <span class="rect5"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 5</p>
-              </div>
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                      <span class="rect3"></span>
-                      <span class="rect4"></span>
-                      <span class="rect5"></span>
-                      <span class="rect6"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 6</p>
-              </div>
-              <div class="rectangle-rise exam-level bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                      <span class="rect3"></span>
-                      <span class="rect4"></span>
-                      <span class="rect5"></span>
-                      <span class="rect6"></span>
-                      <span class="rect7"></span>
-                  </div>
-                  <p class="text-lg font-semibold">Level 7</p>
-              </div>
-          </div>
-          <div class="flex justify-center mt-6">
-              <div class="rectangle-rise mastery-card bg-white rounded-lg shadow-lg cursor-pointer">
-                  <div class="rectangle-animation">
-                      <span class="rect1"></span>
-                      <span class="rect2"></span>
-                      <span class="rect3"></span>
-                      <span class="rect4"></span>
-                      <span class="rect5"></span>
-                      <span class="rect6"></span>
-                      <span class="rect7"></span>
-                      <span class="rect8"></span>
-                  </div>
-                  <div class="mastery-exam">
-                      <p class="text-lg font-semibold">Mastery Exam</p>
-                      <i class="fas fa-crown text-yellow-500"></i>
-                  </div>
-              </div>
-          </div>
-      </section>
-    
-    <section id="daily-exam" class="py-12 text-center fade-in">
-        <h2 class="text-3xl font-semibold mb-6">Daily Examining Pages</h2>
-        <p class="text-lg mb-4">Take your daily quiz to reinforce learning!</p>
-        <button onclick="alert('Starting daily exam... (Placeholder)')" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition duration-300">Start Daily Exam</button>
-    </section>
-    
-    
-    <section id="grammar-slide" class="py-12 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-center">
-        <h2 class="text-3xl font-semibold mb-6">Grammatical Courses</h2>
-        <div class="swiper grammar-swiper" style="max-width: 1200px; margin: auto;">
-            <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="grammar-card bg-white bg-opacity-20 rounded-lg text-center">
-                        <h3 class="text-xl font-semibold">Basic Grammar</h3>
-                        <p>Learn nouns, verbs, and basic sentence structure.</p>
-                        <button onclick="alert('Starting Basic Grammar Course')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start</button>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="grammar-card bg-white bg-opacity-20 rounded-lg text-center">
-                        <h3 class="text-xl font-semibold">Intermediate Grammar</h3>
-                        <p>Explore tenses, clauses, and punctuation.</p>
-                        <button onclick="alert('Starting Intermediate Grammar Course')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start</button>
-                    </div>
-                </div>
-                <div class="swiper-slide">
-                    <div class="grammar-card bg-white bg-opacity-20 rounded-lg text-center">
-                        <h3 class="text-xl font-semibold">Advanced Grammar</h3>
-                        <p>Master complex structures and stylistic elements.</p>
-                        <button onclick="alert('Starting Advanced Grammar Course')" class="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition duration-300">Start</button>
-                    </div>
-                </div>
-            </div>
-            <div class="swiper-button-prev"></div>
-            <div class="swiper-button-next"></div>
-            <div class="swiper-pagination"></div>
-        </div>
-    </section>
-    
-    <script src="https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js"></script>
-    <script>
-        // Initialize Swiper for Educational Tiers
-        const educationSwiper = new Swiper('.education-swiper', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                640: { slidesPerView: 2 },
-                768: { slidesPerView: 3 },
-                1024: { slidesPerView: 4 },
-            },
-        });
+    <div class="swiper-pagination"></div>
+  </div>
+</section>
 
-        // Initialize Swiper for Grammar Courses
-        const grammarSwiper = new Swiper('.grammar-swiper', {
-            slidesPerView: 1,
-            spaceBetween: 20,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
-            breakpoints: {
-                640: { slidesPerView: 2 },
-                768: { slidesPerView: 3 },
-            },
-        });
+<!-- BIGGER ANIMATED CONTENT SECTION -->
+<section class="content-sections">
+  <div class="section-title" data-aos="fade-up">
+    <h2>Explore All Courses</h2>
+    <p>From beginner to advanced — find the perfect learning path with interactive lessons, real-time feedback, and progress tracking.</p>
+  </div>
 
-        function showForm(type) {
-            const authForms = document.getElementById('auth-forms');
-            const signInForm = document.getElementById('signin-form');
-            const signUpForm = document.getElementById('signup-form');
-            authForms.classList.remove('hidden');
-            if (type === 'signin') {
-                signInForm.classList.remove('hidden');
-                signInForm.classList.add('show');
-                signUpForm.classList.add('hidden');
-            } else {
-                signUpForm.classList.remove('hidden');
-                signUpForm.classList.add('show');
-                signInForm.classList.add('hidden');
-            }
+  <div class="content-grid">
+    <!-- Card 1 -->
+    <div class="content-card card-beginner" data-aos="fade-up" data-aos-delay="100">
+      <div class="icon-wrapper">
+        <i class="fas fa-seedling icon"></i>
+      </div>
+      <span class="level">Beginner</span>
+      <h3>English Foundations</h3>
+      <p>Start your journey with basic greetings, alphabet, numbers, and simple sentences. Perfect for absolute beginners.</p>
+      <div class="cta">Start Learning</div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="content-card card-vocabulary" data-aos="fade-up" data-aos-delay="200">
+      <div class="icon-wrapper">
+        <i class="fas fa-book-open icon"></i>
+      </div>
+      <span class="level">All Levels</span>
+      <h3>Daily Vocabulary</h3>
+      <p>Expand your word bank with 10 new words daily. Includes examples, pronunciation, and memory games.</p>
+      <div class="cta">Build Your Vocab</div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="content-card card-grammar" data-aos="fade-up" data-aos-delay="300">
+      <div class="icon-wrapper">
+        <i class="fas fa-cogs icon"></i>
+      </div>
+      <span class="level">Intermediate</span>
+      <h3>Grammar Mastery</h3>
+      <p>Deep dive into tenses, conditionals, and sentence structure with interactive exercises and quizzes.</p>
+      <div class="cta">Fix Your Grammar</div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="content-card card-intermediate" data-aos="fade-up" data-aos-delay="400">
+      <div class="icon-wrapper">
+        <i class="fas fa-book-reader icon"></i>
+      </div>
+      <span class="level">Intermediate</span>
+      <h3>Reading Lab</h3>
+      <p>Improve comprehension with graded stories, news articles, and speed reading challenges.</p>
+      <div class="cta">Start Reading</div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="content-card card-speaking" data-aos="fade-up" data-aos-delay="500">
+      <div class="icon-wrapper">
+        <i class="fas fa-microphone-alt icon"></i>
+      </div>
+      <span class="level">Advanced</span>
+      <h3>Fluent Speaking</h3>
+      <p>Practice real conversations, pronunciation, and fluency with AI voice feedback and role-play scenarios.</p>
+      <div class="cta">Speak Now</div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="content-card card-advanced" data-aos="fade-up" data-aos-delay="600">
+      <div class="icon-wrapper">
+        <i class="fas fa-pen-fancy icon"></i>
+      </div>
+      <span class="level">Advanced</span>
+      <h3>Professional Writing</h3>
+      <p>Master emails, essays, reports, and creative writing with feedback and style improvement tools.</p>
+      <div class="cta">Write Like a Pro</div>
+    </div>
+  </div>
+</section>
+
+<!-- Swiper JS -->
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<!-- AOS JS -->
+<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+<script>
+  // Initialize AOS
+  AOS.init({
+    duration: 800,
+    easing: 'ease-out-cubic',
+    once: true,
+    offset: 100
+  });
+
+  // Navbar Scroll
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 50);
+  });
+
+  // Mobile Menu
+  const menuToggle = document.getElementById('menuToggle');
+  const navLinks = document.getElementById('navLinks');
+  menuToggle.addEventListener('click', () => navLinks.classList.toggle('active'));
+  document.querySelectorAll('.nav-links a').forEach(link => {
+    link.addEventListener('click', () => navLinks.classList.remove('active'));
+  });
+
+  // Responsive slider functionality
+  function initSwiper() {
+    const isMobile = window.innerWidth <= 768;
+    const isTablet = window.innerWidth > 768 && window.innerWidth <= 1024;
+    const isFoldableLandscape = window.innerWidth <= 768 && window.matchMedia('(min-aspect-ratio: 11/10) and (orientation: landscape)').matches;
+    
+    const swiperConfig = {
+      loop: true,
+      pagination: { el: '.swiper-pagination', clickable: true },
+      grabCursor: true,
+      on: {
+        init: updateActiveSlide,
+        slideChange: updateActiveSlide
+      }
+    };
+    
+    if (isMobile && !isFoldableLandscape) {
+      // Mobile config - single slide
+      Object.assign(swiperConfig, {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        centeredSlides: true
+      });
+    } else if (isFoldableLandscape) {
+      // Foldable landscape config
+      Object.assign(swiperConfig, {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 30
+      });
+    } else if (isTablet) {
+      // Tablet config
+      Object.assign(swiperConfig, {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 30
+      });
+    } else {
+      // Desktop config - multi-slide
+      Object.assign(swiperConfig, {
+        slidesPerView: 'auto',
+        centeredSlides: true,
+        spaceBetween: 40,
+        breakpoints: {
+          0:   { slidesPerView: 1, spaceBetween: 20 },
+          768: { slidesPerView: 2, spaceBetween: 30 },
+          992: { slidesPerView: 3, spaceBetween: 40 }
         }
+      });
+    }
+    
+    // Destroy existing swiper instance if it exists
+    if (window.mySwiper) {
+      window.mySwiper.destroy(true, true);
+    }
+    
+    // Initialize new swiper
+    window.mySwiper = new Swiper('.custom-carousel', swiperConfig);
+  }
 
-        function hideForm() {
-            const authForms = document.getElementById('auth-forms');
-            const signInForm = document.getElementById('signin-form');
-            const signUpForm = document.getElementById('signup-form');
-            authForms.classList.add('hidden');
-            signInForm.classList.remove('show');
-            signUpForm.classList.remove('show');
-        }
+  function updateActiveSlide(swiper) {
+    const isMobile = window.innerWidth <= 768;
+    const isFoldableLandscape = window.innerWidth <= 768 && window.matchMedia('(min-aspect-ratio: 11/10) and (orientation: landscape)').matches;
+    
+    if (!isMobile || isFoldableLandscape) {
+      swiper.slides.forEach(s => s.classList.remove('active'));
+      const active = swiper.slides[swiper.activeIndex];
+      if (active) active.classList.add('active');
+    } else {
+      // On mobile, all slides are "active" (full display)
+      swiper.slides.forEach(s => s.classList.add('active'));
+    }
+  }
 
-        function searchWord() {
-            const word = document.getElementById('search-input').value.trim();
-            localStorage.setItem("selectedWord", word);
-            window.location.assign("wordPreview.html");
-        }
+  // Initialize swiper on load
+  document.addEventListener('DOMContentLoaded', initSwiper);
+  
+  // Reinitialize swiper on window resize
+  window.addEventListener('resize', initSwiper);
+</script>
 
-        document.getElementById('signin-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Signed in successfully! (Placeholder)');
-            hideForm();
-        });
-
-        document.getElementById('signup-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            alert('Signed up successfully! (Placeholder)');
-            hideForm();
-        });
-
-        // Add click events for exam levels
-        document.querySelectorAll('#exams-section .rectangle-rise').forEach((el, index) => {
-            el.addEventListener('click', () => {
-                alert(`Level ${index + 1} Exam${index === 7 ? ' (Mastery Exam)' : ''}`);
-            });
-        });
-
-        // Add click events for educational tiers
-        document.querySelectorAll('#education-section .rectangle-rise').forEach((el, index) => {
-            el.addEventListener('click', () => {
-                const words = (index + 1) * 5000;
-                localStorage.setItem("level", `top${words}_words.json`);
-                window.location.assign("excersise.html");
-                
-            });
-        });
-
-        // Add enter key support for search
-        document.getElementById('search-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                searchWord();
-            }
-        });
-    </script>
 </body>
 </html>
