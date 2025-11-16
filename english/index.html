@@ -325,6 +325,9 @@
       background: var(--gradient);
       transition: all 0.4s ease;
     }
+    a{
+      text-decoration:none;
+    }
     .content-card:hover {
       transform: translateY(-12px) scale(1.02);
       box-shadow: 0 25px 60px rgba(0,0,0,0.2);
@@ -615,7 +618,7 @@
   <div class="swiper custom-carousel">
     <div class="swiper-wrapper">
       <!-- Slides (same as before) -->
-      <div class="swiper-slide item slide-beginner">
+      <a class="swiper-slide item slide-beginner">
         <i class="fas fa-seedling slide-icon"></i>
         <div class="item-desc">
           <span class="level">BEGINNER</span>
@@ -623,8 +626,8 @@
           <p>Start your journey with basic greetings, alphabet, numbers, and simple sentences. Perfect for absolute beginners.</p>
           <div class="cta">Start Learning</div>
         </div>
-      </div>
-      <div class="swiper-slide item slide-vocabulary">
+      </a>
+      <a href="vocab.html" class="swiper-slide item slide-vocabulary">
         <i class="fas fa-book-open slide-icon"></i>
         <div class="item-desc">
           <span class="level">ALL LEVELS</span>
@@ -632,8 +635,8 @@
           <p>Expand your word bank with 10 new words daily. Includes examples, pronunciation, and memory games.</p>
           <div class="cta">Build Your Vocab</div>
         </div>
-      </div>
-      <div class="swiper-slide item slide-grammar">
+      </a>
+      <a class="swiper-slide item slide-grammar">
         <i class="fas fa-cogs slide-icon"></i>
         <div class="item-desc">
           <span class="level">INTERMEDIATE</span>
@@ -641,8 +644,8 @@
           <p>Deep dive into tenses, conditionals, and sentence structure with interactive exercises and quizzes.</p>
           <div class="cta">Fix Your Grammar</div>
         </div>
-      </div>
-      <div class="swiper-slide item slide-intermediate">
+      </a>
+      <a class="swiper-slide item slide-intermediate">
         <i class="fas fa-book-reader slide-icon"></i>
         <div class="item-desc">
           <span class="level">INTERMEDIATE</span>
@@ -650,8 +653,8 @@
           <p>Improve comprehension with graded stories, news articles, and speed reading challenges.</p>
           <div class="cta">Start Reading</div>
         </div>
-      </div>
-      <div class="swiper-slide item slide-speaking">
+      </a>
+      <a class="swiper-slide item slide-speaking">
         <i class="fas fa-microphone-alt slide-icon"></i>
         <div class="item-desc">
           <span class="level">ADVANCED</span>
@@ -659,8 +662,8 @@
           <p>Practice real conversations, pronunciation, and fluency with AI voice feedback and role-play scenarios.</p>
           <div class="cta">Speak Now</div>
         </div>
-      </div>
-      <div class="swiper-slide item slide-advanced">
+      </a>
+      <a class="swiper-slide item slide-advanced">
         <i class="fas fa-pen-fancy slide-icon"></i>
         <div class="item-desc">
           <span class="level">ADVANCED</span>
@@ -668,7 +671,7 @@
           <p>Master emails, essays, reports, and creative writing with feedback and style improvement tools.</p>
           <div class="cta">Write Like a Pro</div>
         </div>
-      </div>
+      </a>
     </div>
     <div class="swiper-pagination"></div>
   </div>
@@ -683,7 +686,7 @@
 
   <div class="content-grid">
     <!-- Card 1 -->
-    <div class="content-card card-beginner" data-aos="fade-up" data-aos-delay="100">
+    <a class="content-card card-beginner" data-aos="fade-up" data-aos-delay="100">
       <div class="icon-wrapper">
         <i class="fas fa-seedling icon"></i>
       </div>
@@ -691,10 +694,10 @@
       <h3>English Foundations</h3>
       <p>Start your journey with basic greetings, alphabet, numbers, and simple sentences. Perfect for absolute beginners.</p>
       <div class="cta">Start Learning</div>
-    </div>
+    </a>
 
     <!-- Card 2 -->
-    <div class="content-card card-vocabulary" data-aos="fade-up" data-aos-delay="200">
+    <a href="vocab.html" class="content-card card-vocabulary" data-aos="fade-up" data-aos-delay="200">
       <div class="icon-wrapper">
         <i class="fas fa-book-open icon"></i>
       </div>
@@ -702,10 +705,10 @@
       <h3>Daily Vocabulary</h3>
       <p>Expand your word bank with 10 new words daily. Includes examples, pronunciation, and memory games.</p>
       <div class="cta">Build Your Vocab</div>
-    </div>
+    </a>
 
     <!-- Card 3 -->
-    <div class="content-card card-grammar" data-aos="fade-up" data-aos-delay="300">
+    <a class="content-card card-grammar" data-aos="fade-up" data-aos-delay="300">
       <div class="icon-wrapper">
         <i class="fas fa-cogs icon"></i>
       </div>
@@ -713,10 +716,10 @@
       <h3>Grammar Mastery</h3>
       <p>Deep dive into tenses, conditionals, and sentence structure with interactive exercises and quizzes.</p>
       <div class="cta">Fix Your Grammar</div>
-    </div>
+    </a>
 
     <!-- Card 4 -->
-    <div class="content-card card-intermediate" data-aos="fade-up" data-aos-delay="400">
+    <a class="content-card card-intermediate" data-aos="fade-up" data-aos-delay="400">
       <div class="icon-wrapper">
         <i class="fas fa-book-reader icon"></i>
       </div>
@@ -724,10 +727,10 @@
       <h3>Reading Lab</h3>
       <p>Improve comprehension with graded stories, news articles, and speed reading challenges.</p>
       <div class="cta">Start Reading</div>
-    </div>
+    </a>
 
     <!-- Card 5 -->
-    <div class="content-card card-speaking" data-aos="fade-up" data-aos-delay="500">
+    <a class="content-card card-speaking" data-aos="fade-up" data-aos-delay="500">
       <div class="icon-wrapper">
         <i class="fas fa-microphone-alt icon"></i>
       </div>
@@ -735,10 +738,10 @@
       <h3>Fluent Speaking</h3>
       <p>Practice real conversations, pronunciation, and fluency with AI voice feedback and role-play scenarios.</p>
       <div class="cta">Speak Now</div>
-    </div>
+    </a>
 
     <!-- Card 6 -->
-    <div class="content-card card-advanced" data-aos="fade-up" data-aos-delay="600">
+    <a class="content-card card-advanced" data-aos="fade-up" data-aos-delay="600">
       <div class="icon-wrapper">
         <i class="fas fa-pen-fancy icon"></i>
       </div>
@@ -746,7 +749,7 @@
       <h3>Professional Writing</h3>
       <p>Master emails, essays, reports, and creative writing with feedback and style improvement tools.</p>
       <div class="cta">Write Like a Pro</div>
-    </div>
+    </a>
   </div>
 </section>
 
